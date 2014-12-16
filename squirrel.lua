@@ -2,6 +2,12 @@ Squirrel = class('Squirrel')
 
 function Squirrel:initialize(position)
     self.position = position
+    self.z = 0.7
+end
+
+function Squirrel:update(dt)
+    self.position.x = self.position.x + (math.abs(math.sin(Time * 4)) * 0.5 + 0.5) * dt * 200
+    self.position.y = Vector.Size.y * 0.7 - math.abs(math.sin(Time * 4)) * 50
 end
 
 function Squirrel:draw()

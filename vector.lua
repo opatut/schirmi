@@ -1,5 +1,5 @@
 function assert_vector(v)
-    assert(v ~= nil and v.__name == "Vector")
+    assert(v ~= nil and v.isInstanceOf ~= nil and v:isInstanceOf(Vector))
 end
 
 Vector = class("Vector")
