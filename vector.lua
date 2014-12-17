@@ -1,5 +1,6 @@
 function assert_vector(v)
-    assert(v ~= nil and v.isInstanceOf ~= nil and v:isInstanceOf(Vector))
+    assert(v ~= nil, "Vector is nil")
+    assert(type(v) == "table" and v.isInstanceOf ~= nil and v:isInstanceOf(Vector), "Not a vector: " .. tostring(v))
 end
 
 Vector = class("Vector")
@@ -17,8 +18,13 @@ function Vector:unpack()
     return self.x, self.y
 end
 
+function Vector:insertInto(tbl)
+    table.insert(tbl, self.x)
+    table.insert(tbl, self.y)
+end
+
 function Vector:__tostring()
-    return "[" .. tonumber(self.x) .. " | " .. tonumber(self.y) .. "]"
+    return "[" .. tostring(self.x) .. " | " .. tostring(self.y) .. "]"
 end
 
 function Vector.__unm(a)
@@ -79,6 +85,17 @@ function Vector.permul(a,b)
     return Vector(a.x*b.x, a.y*b.y)
 end
 
+function Vector:apply(fnX, fnY)
+    if fnY == nil then fnY = fnX end
+    self.x = fnX(self.x)
+    self.y = fnY(self.y)
+    return self
+end
+
+function Vector:applied(fnX, fnY)
+    return self:clone():apply(fnX, fnY)
+end
+
 function Vector:len2()
     return self.x * self.x + self.y * self.y
 end
@@ -126,6 +143,10 @@ function Vector:angleTo(v2)
     else
         return 0
     end
+end
+
+function Vector:angle()
+    return self:angleTo(Vector:new(1, 0))
 end
 
 function Vector:perpendicular()

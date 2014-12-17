@@ -2,9 +2,12 @@ local fade = function(t)
     return t * t * t * (t * (t * 6 - 15) + 10)
 end
 
-
-local lerp = function(t,a,b)
+function lerp(t, a, b)
     return a + t * (b - a)
+end
+
+function mix(a, b, t)
+    return lerp(t, a, b)
 end
 
 
@@ -79,8 +82,29 @@ local noise = function(x, y, z)
                 grad(p[BB+1], x-1, y-1, z-1 ))))
 end
 
-local wrap_noise = function(x, y, z)
-    return noise(x or 0, y or 0, z or 0)
+local wrap = function(f)
+    return function(x, y, z)
+        return f(x or 0, y or 0, z or 0)
+    end
 end
 
-return wrap_noise
+local perlin = function(octaves, persistence, lacunarity)
+    return wrap(function(x, y, z)
+        local amplitude = 1
+        local frequency = 1
+        local totalAmplitude = 0
+        local value = 0
+        for i = 1, octaves do
+            value = value + amplitude * noise(x * frequency, y * frequency, z * frequency)
+            totalAmplitude = totalAmplitude + amplitude
+            amplitude = amplitude * persistence
+            frequency = frequency * lacunarity
+        end
+        return value / totalAmplitude
+    end)
+end
+
+return {
+    noise = wrap(noise),
+    perlin = perlin
+}

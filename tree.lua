@@ -3,7 +3,38 @@ Tree = class('Tree')
 function Tree:initialize(position, z)
     self.position = position
     self.z = z
-    self.seed = position.x / 191
+    self.seed = math.random()
+
+    self.mesh = nil
+    self.width = math.random() * 40 + 20
+    self:generate()
+end
+
+function Tree:generate()
+    local rotation = math.pi
+    local length = (self.position.y + 50) / self.z
+    local width = self.width
+    local outline = {}
+
+    local offsets = _.range(1, length, width / 2):map(function(y)
+        return Vector:new(noise(self.seed + y/300) * 20, y)
+    end)
+
+    for i=1, #offsets do
+        local v = (offsets[i] + Vector:new((noise(offsets[i].y/150) * 0.25 + 1) * width, 0)):rotated(rotation)
+        table.insert(outline, v.x)
+        table.insert(outline, v.y)
+    end
+
+    for i=#offsets, 1, -1 do
+        local v = (offsets[i] - Vector:new((noise(offsets[i].y/150) * 0.25 + 1) * width, 0)):rotated(rotation)
+        table.insert(outline, v.x)
+        table.insert(outline, v.y)
+    end
+
+    -- generate outline
+    self.outline = outline
+    self.mesh = meshify(outline)
 end
 
 function Tree:update(dt)
@@ -11,24 +42,14 @@ end
 
 function Tree:draw()
     love.graphics.push()
-    love.graphics.translate(self.position.x, self.position.y)
+    love.graphics.translate(self.position.x - CameraOffset * self.z, self.position.y)
     love.graphics.scale(self.z, self.z)
 
-    local height = Vector.Size.y / self.z
-    local width = 50
-
-    local offsets = _.range(0, -height, -10):map(function(y)
-        return Vector:new(noise(self.seed + y/300) * 20, y)
-    end)
-
     love.graphics.setColor(100 * self.z, 50 * self.z, 0)
-    for i=1, #offsets-1 do
-        local v = offsets[i]
-        local w = offsets[i+1]
-        local dx = noise(v.y/150) * 10 + 40 + math.pow(-v.y, -0.3)*100
-        local ex = noise(w.y/150) * 10 + 40 + math.pow(-w.y, -0.3)*100
-        love.graphics.polygon("fill", {v.x-dx, v.y, w.x-ex, w.y, w.x+ex, w.y, v.x+dx, v.y})
-    end
+    local f = math.pow(1 - self.z, 2)
+    love.graphics.setColor(80 + f*155, 40 + f*185, f*150)
+    love.graphics.draw(self.mesh, 0, 0)
+    -- love.graphics.polygon("line", self.outline)
 
     love.graphics.pop()
 end
