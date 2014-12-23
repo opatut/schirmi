@@ -1,17 +1,8 @@
-local fade = function(t)
+local function fade(t)
     return t * t * t * (t * (t * 6 - 15) + 10)
 end
 
-function lerp(t, a, b)
-    return a + t * (b - a)
-end
-
-function mix(a, b, t)
-    return lerp(t, a, b)
-end
-
-
-local grad = function(hash,x,y,z)
+local function grad(hash,x,y,z)
     local h = hash % 16
     local u
     local v
@@ -47,7 +38,10 @@ for i=0,255 do
     p[256+i] = permutation[i+1]
 end
 
-local noise = function(x, y, z)
+function noise(x, y, z)
+    x = default(x, 0)
+    y = default(y, 0)
+    z = default(z, 0)
     local X = math.floor(x % 255)
     local Y = math.floor(y % 255)
     local Z = math.floor(z % 255)
@@ -82,14 +76,11 @@ local noise = function(x, y, z)
                 grad(p[BB+1], x-1, y-1, z-1 ))))
 end
 
-local wrap = function(f)
+function perlin(octaves, persistence, lacunarity)
     return function(x, y, z)
-        return f(x or 0, y or 0, z or 0)
-    end
-end
-
-local perlin = function(octaves, persistence, lacunarity)
-    return wrap(function(x, y, z)
+        x = default(x, 0)
+        y = default(y, 0)
+        z = default(z, 0)
         local amplitude = 1
         local frequency = 1
         local totalAmplitude = 0
@@ -101,10 +92,5 @@ local perlin = function(octaves, persistence, lacunarity)
             frequency = frequency * lacunarity
         end
         return value / totalAmplitude
-    end)
+    end
 end
-
-return {
-    noise = wrap(noise),
-    perlin = perlin
-}

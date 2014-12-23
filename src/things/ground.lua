@@ -10,14 +10,15 @@ function Ground:initialize(y, z, color)
 end
 
 function Ground:getHeight(x)
-    return self.y - self.perlin(self.seed + x/1000) * Vector.Size.y * 0.5
+    -- return self.y
+    return self.y - (1.1 + self.perlin(self.seed + x/1000) * Vector.Size.y * self.z) * 0.2
 end
 
 function Ground:generate()
     -- generate outline
     local outline = {}
     local p = 10
-    for x=-p, Vector.Size.x+p, 10 do
+    for x=-p, Vector.Size.x+p, 20 do
         table.insert(outline, x)
         table.insert(outline, self:getHeight(CameraOffset * self.z + x))
     end
@@ -47,11 +48,8 @@ function Ground:update(dt)
 end
 
 function Ground:draw()
-    love.graphics.push()
-    love.graphics.translate(0, 0)
-
-    self.color:set()
-    love.graphics.draw(self.mesh, 0, 0)
-
-    love.graphics.pop()
+    draw(self.z, function()
+        self.color:set()
+        love.graphics.draw(self.mesh, 0, 0)
+    end)
 end

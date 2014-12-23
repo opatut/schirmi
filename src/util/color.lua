@@ -7,6 +7,10 @@ function Color:initialize(r, g, b, a)
     self.a = (a ~= nil) and a or 1
 end
 
+function Color:clone()
+    return Color(self.r, self.g, self.b, self.a)
+end
+
 function Color:factor(x)
     return self.r * x, self.g * x, self.b * x, self.a * x
 end
@@ -15,12 +19,32 @@ function Color:unpack()
     return self:factor(1)
 end
 
-function Color:set()
-    love.graphics.setColor(self:factor(255))
+function Color:set(a)
+    local c = self:clone()
+    if a ~= nil then c.a = c.a * a end
+    c:fix()
+    love.graphics.setColor(c:factor(255))
 end
 
 function Color:get()
     return Color.from255(love.graphics.getColor())
+end
+
+function Color:fix()
+    self.r = math.max(0, math.min(1, self.r))
+    self.g = math.max(0, math.min(1, self.g))
+    self.b = math.max(0, math.min(1, self.b))
+    self.a = math.max(0, math.min(1, self.a))
+end
+
+function Color:randomize(fr, fg, fb)
+    if fg == nil then fg = fr end
+    if fb == nil then fb = fg end
+    self.r = self.r + lerp(math.random(), -fr, fr)
+    self.g = self.g + lerp(math.random(), -fg, fg)
+    self.b = self.b + lerp(math.random(), -fb, fb)
+    self:fix()
+    return self
 end
 
 function Color.__add(a, b)
@@ -34,8 +58,10 @@ end
 function Color.__mul(a, b)
     if type(b) == "number" then
         return Color:new(a.r * b, a.g * b, a.b * b, a.a * b)
+    elseif type(a) == "number" then
+        return Color:new(b.r * a, b.g * a, b.b * a, b.a * a)
     elseif b.isInstanceOf(Color) then
-        return Color:new(a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a)
+        return Color:new(a.r * r, a.g * b.g, a.b * b.b, a.a * b.a)
     end
 end
 

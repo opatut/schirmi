@@ -1,0 +1,7 @@
+require "src/things/conifer"
+require "src/things/grass"
+require "src/things/ground"
+require "src/things/owl"
+require "src/things/squirrel"
+require "src/things/tree"
+require "src/things/sun"
