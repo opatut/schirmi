@@ -41,7 +41,7 @@ function Owl:startBlinking()
 end
 
 function Owl:generate()
-    self.body = meshify(circle(32, function(v)
+    self.body = meshify(circle(20, function(v)
         v:apply(curryr(apow, 0.8))
         v.y = v.y - 1
         v.x = v.x * 0.8
@@ -57,7 +57,7 @@ function Owl:generate()
         return v * 0.6 * 0.5
     end))
 
-    self.eye = meshify(circle(40, function(v, i)
+    self.eye = meshify(circle(20, function(v, i)
         return v:apply(curryr(apow, 1), curryr(apow, 0.8))
     end))
 
@@ -70,7 +70,7 @@ function Owl:generate()
     Vector:new( 0.5,-0.5):insertInto(beak)
     self.beak = meshify(beak)
 
-    self.wing = meshify(circle(32, function(v)
+    self.wing = meshify(circle(16, function(v)
         v.y = (v.y - 1) / 2
         v.x = lerp(v.y, v.x/4, v.x / 3)
         return v:rotated(math.pi)
@@ -95,8 +95,8 @@ function Owl:draw()
             love.graphics.scale(self.size)
 
             Color:new(1, 0.8, 0):darken(0.2):set()
-            love.graphics.circle("fill",  0.12, -0.03, 0.08, 32)
-            love.graphics.circle("fill", -0.12, -0.03, 0.08, 32)
+            love.graphics.circle("fill",  0.12, -0.03, 0.08, 16)
+            love.graphics.circle("fill", -0.12, -0.03, 0.08, 16)
 
             -- ears
             self.color:set()
@@ -116,17 +116,17 @@ function Owl:draw()
             love.graphics.draw(self.eye, -0.13, -0.7, 0, 0.17)
             love.graphics.draw(self.eye,  0.13, -0.7, 0, 0.17)
             Color.White:set()
-            love.graphics.circle("fill", -0.13, -0.7, 0.12, 32)
-            love.graphics.circle("fill",  0.13, -0.7, 0.12, 32)
+            love.graphics.circle("fill", -0.13, -0.7, 0.12, 16)
+            love.graphics.circle("fill",  0.13, -0.7, 0.12, 16)
 
             -- pupils
             if self.blink == 0 then
                 Color.Black:set()
-                love.graphics.circle("fill", -0.13, -0.7, 0.08, 32)
-                love.graphics.circle("fill",  0.13, -0.7, 0.08, 32)
+                love.graphics.circle("fill", -0.13, -0.7, 0.08, 11)
+                love.graphics.circle("fill",  0.13, -0.7, 0.08, 11)
                 Color.White:set()
-                love.graphics.circle("fill", -0.13-0.02, -0.7-0.02, 0.02, 32)
-                love.graphics.circle("fill",  0.13-0.02, -0.7-0.02, 0.02, 32)
+                love.graphics.circle("fill", -0.13-0.02, -0.7-0.02, 0.02, 5)
+                love.graphics.circle("fill",  0.13-0.02, -0.7-0.02, 0.02, 5)
             end
 
             -- beak

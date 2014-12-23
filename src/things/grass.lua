@@ -17,7 +17,7 @@ function Grass:generate()
     self.bezier:addRelative(tip, (-tip):rotated( 0.2) * 0.4, (-tip):rotated(-0.2) * 0.4)
     self.bezier:addRelative( offset, Vector:new(-0.1, -0.4), -offset/2)
 
-    self.mesh = self.bezier:meshify(4, false)
+    self.mesh = self.bezier:meshify(1, false)
 end
 
 function Grass:update(dt)

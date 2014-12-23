@@ -16,13 +16,13 @@ end
 function Leaves:generate()
     while true do
         self.bezier = Bezier:new()
-        self.bezier.points = circle(20, function(v, i)
+        self.bezier.points = circle(16, function(v, i)
             v = v * lerp(math.random(), 1.0, 1.3)
             v = v:permul(self.size/2)
             return BezierPoint:new(v, v + v:rotated(math.pi/2) * 0.1, 1)
         end)
 
-        success, self.mesh = pcall(Bezier.meshify, self.bezier, 6, true)
+        success, self.mesh = pcall(Bezier.meshify, self.bezier, 4, true)
         if success then break end
     end
 end
@@ -181,17 +181,17 @@ function Tree:initialize(position, z)
 end
 
 function Tree:generate()
-    local width = 150
+    local width = Vector.Size.y / 7.2
 
     while true do
         self.tips = {}
-        self.mainBranch = Branch:new(nil, self, lerp(math.random(), 350, 650), 0, 0, 0, width)
+        self.mainBranch = Branch:new(nil, self, lerp(math.random(), 0.5, 1) * 4 * width, 0, 0, 0, width)
         self.mainBranch:generateChildren(3)
 
         self.bezier = Bezier:new()
         self.mainBranch:addToBezier(self.bezier)
         -- self.outline = self.bezier:outlineify(20, false)
-        success, self.mesh = pcall(Bezier.meshify, self.bezier, 8, false)
+        success, self.mesh = pcall(Bezier.meshify, self.bezier, 4, false)
         if success then break end
     end
 

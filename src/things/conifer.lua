@@ -5,7 +5,7 @@ function Conifer:initialize(position, z)
     self.z = z
     self.rot = lerp(math.random(), -0.2, 0.2)
     self.seed = math.random()
-    self.size = 300
+    self.size = Vector.Size.y / 3.6
 
     self.color = fogify(self.z, Color.from255(30, 60, 10))
     self.color = fogify(self.z, Color.from255(30, 60, 10))
@@ -20,7 +20,7 @@ function Conifer:generate()
     self.bezier:add(Vector:new( 0.0, 0.0), Vector:new(-0.2, 0.5), Vector:new( 0.2, 0.5))
     self.bezier:add(Vector:new( 0.7, 1.0), Vector:new( 0.3, 0.7), Vector:new( 0.2, 1.2))
     self.bezier:add(Vector:new(-0.7, 1.0), Vector:new(-0.2, 1.2), Vector:new(-0.3, 0.7))
-    self.mesh = self.bezier:meshify(10, true)
+    self.mesh = self.bezier:meshify(6, true)
 end
 
 function Conifer:update(dt)

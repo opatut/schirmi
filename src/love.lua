@@ -9,11 +9,14 @@ sky = gradient({{100, 180, 255}, {200, 220, 255}, direction="horizontal"})
 -- Fog = Color.from255(232, 233, 115)
 Fog = Color.from255(200, 220, 255)
 
-debug = true
+debug = false
 paused = false
-preloadDuration = 50
+preloadDuration = 100
 preloading = debug and 0 or preloadDuration
 font = nil
+release = true
+
+mouse = nil
 
 preloadTexts = {
     "Planting trees",
@@ -38,6 +41,14 @@ treegen = Generator:new(function()
     return tree
 end, 5)
 
+moosegen = Generator:new(function()
+    local z = lerp(math.random(), 0.7, 0.9)
+    local moose = Moose:new(Vector:new(CameraOffset + Vector.Size.x * lerp(math.random(), 1, 1.5), z2y(z)), z)
+
+    table.insert(things, moose)
+    return moose
+end, 1/120)
+
 grounds = {}
 
 function groundColor(z)
@@ -50,14 +61,14 @@ function groundColor(z)
 end
 
 grassgen = Generator:new(function()
-    local ground = grounds[math.ceil(lerp(math.random(), 0, #grounds/2))]
+    local ground = grounds[math.ceil(lerp(math.random(), 0, 2))]
 
     local x = CameraOffset / ground.z + Vector.Size.x + lerp(math.random(), 20, 40)
     local grass = Grass:new(Vector:new(x, ground:getHeight(x) + 5), ground.z, ground.color)
 
     table.insert(things, grass)
     return grass
-end, 10)
+end, 5)
 
 function love.load()
     love.keyboard.setKeyRepeat(true)
@@ -66,11 +77,18 @@ function love.load()
     huge = love.graphics.newFont("data/TrashHand.TTF", 60)
     love.graphics.setFont(font)
 
+
+    mooseKeys = {"body", "head", "legBL", "legBR", "legFL", "legFR", "tail"}
+    mooseImages = {}
+
+    for _, key in ipairs(mooseKeys) do
+        mooseImages[key] = love.graphics.newImage("data/moose/" .. key .. ".png")
+    end
+
+
     -- love.window.setMode(1200, 800)
     Vector.Size = Vector:new(love.graphics.getWidth(), love.graphics.getHeight())
     math.randomseed(os.time())
-
-    floor = love.graphics.newImage("data/floor.png")
 
     -- create ground layers
     for i = 0, 1, 0.2 do
@@ -96,6 +114,15 @@ function love.update(dt)
     if preloading > 0 then
         dt = 0.3
         preloading = preloading - dt
+    elseif release then
+        if not mouse then
+            mouse = Vector:new(love.mouse.getPosition())
+        else
+            newmouse = Vector:new(love.mouse.getPosition())
+            if newmouse ~= mouse then
+                love.event.quit()
+            end
+        end
     end
 
     tween.update(dt)
@@ -113,6 +140,7 @@ function love.update(dt)
     if not paused then
         treegen:update(dt)
         grassgen:update(dt)
+        moosegen:update(dt)
     end
 
     for i = 1, #things do
@@ -153,21 +181,24 @@ end
 -- Event handling
 
 function love.keypressed(key)
-    if key == "p" then
-        paused = not paused
-    elseif key == "t" then
-        things = { Tree:new(Vector:new(Vector.Size.x / 2, Vector.Size.y * 0.6), 0.5) }
-        -- things = { Grass:new(Vector:new(Vector.Size.x / 2, Vector.Size.y * 0.6), 0.5, Color.Red) }
-    elseif key == "d" then
-        debug = not debug
-    elseif key == "0" then
-        CameraOffset = 0
-    elseif not debug or key == "escape" then
+    if release then
         love.event.quit()
+    else
+        if key == "p" then
+            paused = not paused
+        elseif key == "t" then
+            things = { Tree:new(Vector:new(Vector.Size.x / 2, Vector.Size.y * 0.6), 0.5) }
+            -- things = { Grass:new(Vector:new(Vector.Size.x / 2, Vector.Size.y * 0.6), 0.5, Color.Red) }
+        elseif key == "d" then
+            debug = not debug
+        elseif key == "0" then
+            CameraOffset = 0
+        elseif not debug or key == "escape" then
+            love.event.quit()
+        end
     end
 end
 
 function love.mousepressed()
     love.event.quit()
 end
-
